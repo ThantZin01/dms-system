@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { Link, usePathname, useRouter } from "@/i18n/routing";
 import { Menu, X, LayoutDashboard, Users, Trash2, Banknote, Receipt, Settings, UserCircle, Droplet, LogOut } from "lucide-react";
@@ -9,9 +10,14 @@ import { authClient } from "@/lib/auth-client";
 
 export function MobileNav({ role, name }: { role?: string, name?: string }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const t = useTranslations("Sidebar");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleLogout = async () => {
     await authClient.signOut();
@@ -29,20 +35,12 @@ export function MobileNav({ role, name }: { role?: string, name?: string }) {
     { name: t("settings"), href: "/settings", icon: Settings },
   ];
 
-  return (
-    <div className="md:hidden">
-      <button
-        onClick={() => setIsOpen(true)}
-        className="p-2 -ml-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
-        aria-label="Open Menu"
-      >
-        <Menu className="h-6 w-6" />
-      </button>
-
+  const drawerContent = (
+    <>
       {/* Backdrop */}
       {isOpen && (
         <div 
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm"
           onClick={() => setIsOpen(false)}
         />
       )}
@@ -50,7 +48,7 @@ export function MobileNav({ role, name }: { role?: string, name?: string }) {
       {/* Sidebar Drawer */}
       <div 
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-gray-900 shadow-2xl transition-transform duration-300 ease-in-out transform flex flex-col",
+          "fixed inset-y-0 left-0 z-[110] w-72 bg-white dark:bg-gray-900 shadow-2xl transition-transform duration-300 ease-in-out transform flex flex-col",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -116,6 +114,20 @@ export function MobileNav({ role, name }: { role?: string, name?: string }) {
           </button>
         </div>
       </div>
+    </>
+  );
+
+  return (
+    <div className="md:hidden">
+      <button
+        onClick={() => setIsOpen(true)}
+        className="p-2 -ml-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
+        aria-label="Open Menu"
+      >
+        <Menu className="h-6 w-6" />
+      </button>
+
+      {mounted && createPortal(drawerContent, document.body)}
     </div>
   );
 }
