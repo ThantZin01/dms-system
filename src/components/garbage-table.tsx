@@ -39,8 +39,8 @@ export function GarbageTable({ records, people, isAdmin }: GarbageTableProps) {
 
   return (
     <>
-      <div className="rounded-2xl bg-white/50 dark:bg-black/20 p-1">
-        <table className="w-full text-sm text-left border-collapse">
+      <div className="rounded-2xl bg-white/50 dark:bg-black/20 p-1 overflow-x-auto w-full">
+        <table className="w-full text-sm text-left border-collapse min-w-[600px]">
           <thead>
             <tr>
               <th className="px-6 py-4 font-semibold text-gray-500 border-b border-gray-200/50 dark:border-gray-800/50">Person</th>
