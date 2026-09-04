@@ -11,8 +11,8 @@
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
     "@neondatabase/serverless": "^1.1.0",
-    "@prisma/adapter-neon": "^8.0.0-rc.12",
-    "@prisma/client": "^8.0.0-rc.12",
+    "@prisma/adapter-neon": "latest",
+    "@prisma/client": "latest",
     "@serwist/next": "^9.5.12",
     "bcryptjs": "^3.0.3",
     "better-auth": "^1.7.2",
@@ -40,7 +40,7 @@
     "@types/ws": "^8.18.1",
     "eslint": "^9",
     "eslint-config-next": "16.3.3",
-    "prisma": "^8.0.0-rc.12",
+    "prisma": "latest",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
