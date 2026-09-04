@@ -25,7 +25,7 @@ export default async function DashboardLayout({
     <div className="flex h-screen w-full overflow-hidden p-2 md:p-6 gap-2 md:gap-6">
       <Sidebar role={role} name={userName} />
       <div className="flex-1 flex flex-col rounded-2xl md:rounded-3xl overflow-hidden bg-white/70 shadow-2xl backdrop-blur-xl border border-white/20 dark:bg-black/50 dark:border-white/10 relative">
-        <header className="flex h-16 shrink-0 items-center gap-4 border-b border-gray-200/50 bg-white/40 px-4 md:px-8 backdrop-blur-md dark:border-gray-800/50 dark:bg-black/20">
+        <header className="relative z-50 flex h-16 shrink-0 items-center gap-4 border-b border-gray-200/50 bg-white/40 px-4 md:px-8 backdrop-blur-md dark:border-gray-800/50 dark:bg-black/20">
            <MobileNav role={role} name={userName} />
            <div className="ml-auto flex items-center space-x-4">
              <NotificationBell />
