@@ -125,6 +125,7 @@ export async function getGarbageRotation() {
         id: true,
         userId: true,
         fullName: true,
+        createdAt: true,
         garbageRecords: {
           orderBy: { dateThrown: 'desc' },
           take: 1,
@@ -137,10 +138,15 @@ export async function getGarbageRotation() {
       id: person.id,
       userId: person.userId,
       fullName: person.fullName,
+      createdAt: person.createdAt,
       lastThrown: person.garbageRecords[0]?.dateThrown || null
     })).sort((a, b) => {
+      // Both never threw: respect insertion order (earlier createdAt = UP NEXT)
+      if (!a.lastThrown && !b.lastThrown) return a.createdAt.getTime() - b.createdAt.getTime();
+      // Never threw goes before someone who has thrown
       if (!a.lastThrown) return -1;
       if (!b.lastThrown) return 1;
+      // Both threw: whoever threw longer ago goes first
       return a.lastThrown.getTime() - b.lastThrown.getTime();
     });
 
