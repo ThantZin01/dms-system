@@ -1,0 +1,176 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  emailVerified Boolean   @default(false)
+  image         String?
+  role          Role      @default(STUDENT)
+  theme         String    @default("system")
+  language      String    @default("en")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  account       Account[]
+  personDetails Person?   @relation("UserPerson")
+  session       Session[]
+  notifications Notification[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  accessTokenExpiresAt  DateTime?
+  idToken               String?
+  issuer                String?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verification")
+}
+
+model Person {
+  id             String          @id @default(cuid())
+  userId         String?         @unique
+  fullName       String
+  contactNumber  String?
+  emergencyPhone String?
+  roomNumber     String?
+  moveInDate     DateTime        @default(now())
+  isActive       Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  dormitoryFees  DormitoryFee[]
+  garbageRecords GarbageRecord[]
+  user           User?           @relation("UserPerson", fields: [userId], references: [id])
+  sharedExpenses Expense[]       @relation("ExpenseToPerson")
+  waterPurchases WaterPurchase[] @relation("WaterPurchaseToPerson")
+
+  @@map("person")
+}
+
+model GarbageRecord {
+  id         String   @id @default(cuid())
+  personId   String
+  dateThrown DateTime @default(now())
+  isTurn     Boolean  @default(false)
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  person     Person   @relation(fields: [personId], references: [id])
+
+  @@map("garbage_record")
+}
+
+model DormitoryFee {
+  id            String   @id @default(cuid())
+  personId      String
+  amount        Float
+  paymentDate   DateTime @default(now())
+  periodStart   DateTime
+  periodEnd     DateTime
+  receiptNumber String?  @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  person        Person   @relation(fields: [personId], references: [id])
+
+  @@map("dormitory_fee")
+}
+
+model Expense {
+  id              String   @id @default(cuid())
+  amount          Float
+  expenseDate     DateTime @default(now())
+  description     String?
+  costPerPerson   Float?
+  receiptImageUrl String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  type            String
+  sharedBy        Person[] @relation("ExpenseToPerson")
+
+  @@map("expense")
+}
+
+enum Role {
+  ADMIN
+  STUDENT
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("notification")
+}
+
+model WaterBottle {
+  id          String   @id @default(cuid())
+  label       String   
+  status      String   @default("FULL") 
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("water_bottle")
+}
+
+model WaterPurchase {
+  id              String   @id @default(cuid())
+  quantity        Int
+  totalCost       Float
+  costPerPerson   Float
+  purchaseDate    DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  sharedBy        Person[] @relation("WaterPurchaseToPerson")
+
+  @@map("water_purchase")
+}
