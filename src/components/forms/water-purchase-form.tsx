@@ -77,12 +77,12 @@ export function WaterPurchaseForm({ onSuccess, people }: WaterPurchaseFormProps)
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="quantity">Quantity (Bottles)</Label>
-          <Input id="quantity" type="number" step="1" {...register("quantity")} placeholder="1" />
+          <Input id="quantity" type="number" step="1" {...register("quantity", { setValueAs: (v) => v === "" ? undefined : Number(v) })} placeholder="1" />
           {errors.quantity && <p className="text-sm text-red-500">{errors.quantity.message}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="totalCost">Total Cost (Ks)</Label>
-          <Input id="totalCost" type="number" step="0.01" {...register("totalCost")} placeholder="2000" />
+          <Input id="totalCost" type="number" step="0.01" {...register("totalCost", { setValueAs: (v) => v === "" ? undefined : Number(v) })} placeholder="2000" />
           {errors.totalCost && <p className="text-sm text-red-500">{errors.totalCost.message}</p>}
         </div>
       </div>

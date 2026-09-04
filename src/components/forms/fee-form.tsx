@@ -81,7 +81,7 @@ export function FeeForm({ onSuccess, people, initialData }: FeeFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="amount">Amount (Ks)</Label>
-        <Input id="amount" type="number" step="0.01" {...register("amount")} placeholder="150000" />
+        <Input id="amount" type="number" step="0.01" {...register("amount", { setValueAs: (v) => v === "" ? undefined : Number(v) })} placeholder="150000" />
         {errors.amount && <p className="text-sm text-red-500">{errors.amount.message}</p>}
       </div>
 
