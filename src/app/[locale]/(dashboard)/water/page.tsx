@@ -52,7 +52,7 @@ export default async function WaterPage(props: {
       <WaterStock bottles={bottles} isAdmin={isAdmin} />
 
       <div className="pt-8 border-t border-gray-200 dark:border-gray-800">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
           <div>
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">Purchase History</h2>
             <p className="text-sm text-gray-500">Log of all water bottle restocks.</p>
@@ -60,7 +60,7 @@ export default async function WaterPage(props: {
           {isAdmin && (
             <a 
               href="?log=true"
-              className="flex items-center gap-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl font-medium"
+              className="flex items-center gap-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl font-medium whitespace-nowrap"
             >
               <Plus size={20} />
               <span>Log Restock</span>

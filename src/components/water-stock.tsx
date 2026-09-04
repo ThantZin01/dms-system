@@ -61,7 +61,7 @@ export function WaterStock({ bottles, isAdmin }: WaterStockProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Inventory</h2>
           <p className="text-sm text-gray-500">
@@ -80,7 +80,7 @@ export function WaterStock({ bottles, isAdmin }: WaterStockProps) {
             <button 
               onClick={handleAddBottle}
               disabled={isAdding}
-              className="h-9 px-3 bg-sky-500 hover:bg-sky-600 text-white rounded-lg flex items-center gap-1 text-sm font-medium transition-colors disabled:opacity-50"
+              className="h-9 px-3 bg-sky-500 hover:bg-sky-600 text-white rounded-lg flex items-center gap-1 text-sm font-medium transition-colors disabled:opacity-50 whitespace-nowrap"
             >
               <Plus size={16} /> Add
             </button>
