@@ -9,7 +9,7 @@ export default async function proxy(request: NextRequest) {
 	const sessionCookie = request.cookies.get("better-auth.session_token") || request.cookies.get("__Secure-better-auth.session_token");
 	const session = !!sessionCookie;
 
-	const isAuthRoute = request.nextUrl.pathname.startsWith("/api/auth");
+	const isAuthRoute = request.nextUrl.pathname.startsWith("/api/auth") || request.nextUrl.pathname.startsWith("/api/setup");
     const isLoginRoute = request.nextUrl.pathname.includes("/login");
 
 	if (isAuthRoute) {
