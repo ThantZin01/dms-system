@@ -95,7 +95,7 @@ export function ExpenseForm({ onSuccess, people, initialData }: ExpenseFormProps
 
       <div className="space-y-2">
         <Label htmlFor="amount">Amount (Ks)</Label>
-        <Input id="amount" type="number" step="0.01" {...register("amount", { valueAsNumber: true })} placeholder="5000" />
+        <Input id="amount" type="number" step="0.01" {...register("amount")} placeholder="5000" />
         {errors.amount && <p className="text-sm text-red-500">{errors.amount.message}</p>}
       </div>
 

@@ -18,7 +18,7 @@ export const garbageRecordSchema = z.object({
 
 export const dormitoryFeeSchema = z.object({
   personId: z.string().min(1, "Person is required"),
-  amount: z.number().positive("Amount must be positive"),
+  amount: z.coerce.number().positive("Amount must be positive"),
   paymentDate: z.string().or(z.date()),
   periodStart: z.string().or(z.date()),
   periodEnd: z.string().or(z.date()),
@@ -26,7 +26,7 @@ export const dormitoryFeeSchema = z.object({
 
 export const expenseSchema = z.object({
   type: z.string().min(1, "Type is required"),
-  amount: z.number().positive("Amount must be positive"),
+  amount: z.coerce.number().positive("Amount must be positive"),
   expenseDate: z.string().or(z.date()),
   description: z.string().optional(),
   sharedByIds: z.array(z.string()).min(1, "At least one person must be selected"),
@@ -50,8 +50,8 @@ export const waterBottleSchema = z.object({
 });
 
 export const waterPurchaseSchema = z.object({
-  quantity: z.number().int().positive("Quantity must be at least 1"),
-  totalCost: z.number().positive("Cost must be positive"),
+  quantity: z.coerce.number().int().positive("Quantity must be at least 1"),
+  totalCost: z.coerce.number().positive("Cost must be positive"),
   purchaseDate: z.string().or(z.date()),
   sharedByIds: z.array(z.string()).min(1, "At least one person must be selected"),
 });
