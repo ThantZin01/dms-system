@@ -4,7 +4,7 @@ import prisma from "@/lib/db";
 import { accountSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 import { hashPassword } from "better-auth/crypto";
-import { checkAdmin } from "@/lib/auth";
+import { checkAdmin, auth } from "@/lib/auth";
 
 export async function createAccountAction(data: any) {
   try {
@@ -29,24 +29,24 @@ export async function createAccountAction(data: any) {
         throw new Error("User with this email already exists");
     }
 
-    const hashedPassword = await hashPassword(parsed.data.password);
-
-    const user = await prisma.user.create({
-      data: {
+    // Use better-auth directly so it creates the exact Account structure it expects
+    // Note: We intentionally don't pass headers so it doesn't log the admin out
+    const response = await auth.api.signUpEmail({
+      body: {
         email: parsed.data.email,
-        name: parsed.data.name,
-        role: parsed.data.role,
-      },
+        password: parsed.data.password,
+        name: parsed.data.name || "",
+      }
     });
 
-    await prisma.account.create({
-      data: {
-        userId: user.id,
-        accountId: user.id,
-        providerId: "credential",
-        password: hashedPassword,
-        issuer: "local:credential",
-      }
+    if (!response || !response.user) {
+      throw new Error("Failed to create user with better-auth");
+    }
+
+    // Update the role after creation
+    const user = await prisma.user.update({
+      where: { id: response.user.id },
+      data: { role: parsed.data.role },
     });
 
     revalidatePath("/accounts");

@@ -8,7 +8,13 @@ export function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstallable, setIsInstallable] = useState(false);
 
+  const [isStandalone, setIsStandalone] = useState(false);
+
   useEffect(() => {
+    if (window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone) {
+      setIsStandalone(true);
+    }
+
     const handleBeforeInstallPrompt = (e: Event) => {
       // Prevent Chrome 67 and earlier from automatically showing the prompt
       e.preventDefault();
@@ -42,6 +48,10 @@ export function PWAInstallPrompt() {
     setDeferredPrompt(null);
     setIsInstallable(false);
   };
+
+  if (isStandalone) {
+    return null;
+  }
 
   return (
     <Button 
