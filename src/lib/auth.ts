@@ -13,7 +13,7 @@ export const auth = betterAuth({
         process.env.VERCEL_BRANCH_URL ? `https://${process.env.VERCEL_BRANCH_URL}` : ""
     ].map(cleanUrl).filter(Boolean),
     database: prismaAdapter(prisma, {
-        provider: "postgresql", 
+        provider: "sqlite", 
     }),
     emailAndPassword: {
         enabled: true,

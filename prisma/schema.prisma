@@ -1,10 +1,9 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -14,7 +13,7 @@ model User {
   name          String?
   emailVerified Boolean   @default(false)
   image         String?
-  role          Role      @default(STUDENT)
+  role          String    @default("STUDENT")
   theme         String    @default("system")
   language      String    @default("en")
   createdAt     DateTime  @default(now())
@@ -133,11 +132,6 @@ model Expense {
   sharedBy        Person[] @relation("ExpenseToPerson")
 
   @@map("expense")
-}
-
-enum Role {
-  ADMIN
-  STUDENT
 }
 
 model Notification {
