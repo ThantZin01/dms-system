@@ -50,7 +50,7 @@ export function PeopleTable({ people, isAdmin, users }: PeopleTableProps) {
             <thead>
               <tr>
                 <th className="px-6 py-4 font-semibold text-gray-500 border-b border-gray-200/50 dark:border-gray-800/50">{t('fullName')}</th>
-                <th className="px-6 py-4 font-semibold text-gray-500 border-b border-gray-200/50 dark:border-gray-800/50">{t('email')}</th>
+                <th className="px-6 py-4 font-semibold text-gray-500 border-b border-gray-200/50 dark:border-gray-800/50">{t('roomNumber')}</th>
                 <th className="px-6 py-4 font-semibold text-gray-500 border-b border-gray-200/50 dark:border-gray-800/50">{t('phone')}</th>
                 <th className="px-6 py-4 font-semibold text-gray-500 border-b border-gray-200/50 dark:border-gray-800/50">{t('joinDate')}</th>
                 <th className="px-6 py-4 font-semibold text-gray-500 border-b border-gray-200/50 dark:border-gray-800/50 text-center">{t('status')}</th>

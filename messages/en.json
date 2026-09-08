@@ -29,6 +29,7 @@
     "editPerson": "Edit Person",
     "fullName": "Full Name",
     "email": "Email",
+    "roomNumber": "Room No.",
     "phone": "Phone",
     "joinDate": "Join Date",
     "status": "Status",
