@@ -9,16 +9,21 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-hot-toast";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/routing";
 
 type FormData = z.input<typeof waterPurchaseSchema>;
 
 interface WaterPurchaseFormProps {
   onSuccess?: () => void;
   people: { id: string; fullName: string }[];
+  defaultQuantity?: number;
 }
 
-export function WaterPurchaseForm({ onSuccess, people }: WaterPurchaseFormProps) {
+export function WaterPurchaseForm({
+  onSuccess,
+  people,
+  defaultQuantity = 1,
+}: WaterPurchaseFormProps) {
   const router = useRouter();
   const {
     register,
@@ -31,8 +36,8 @@ export function WaterPurchaseForm({ onSuccess, people }: WaterPurchaseFormProps)
     resolver: zodResolver(waterPurchaseSchema),
     defaultValues: {
       purchaseDate: new Date().toISOString().split("T")[0],
-      sharedByIds: people.map(p => p.id),
-      quantity: 1,
+      sharedByIds: people.map((p) => p.id),
+      quantity: defaultQuantity,
     },
   });
 
@@ -41,113 +46,131 @@ export function WaterPurchaseForm({ onSuccess, people }: WaterPurchaseFormProps)
       const formattedData = {
         ...data,
         quantity: Number(data.quantity),
-        totalCost: Number(data.totalCost)
+        totalCost: Number(data.totalCost),
       };
 
       const res = await logWaterPurchase(formattedData);
-
       if (res.error) throw new Error(res.error);
-      
-      toast.success("Water purchase logged successfully!");
+
+      toast.success("Water restock logged & bottles refilled");
       reset();
       router.refresh();
-      router.push('/water');
       onSuccess?.();
     } catch (error: any) {
-      toast.error(error.message || "Failed to save purchase");
+      toast.error(error.message || "Failed to save restock");
     }
   };
 
-  const amountValue = watch("totalCost") || 0;
+  const amountValue = Number(watch("totalCost")) || 0;
   const sharedByIdsValue = watch("sharedByIds") || [];
-  const splitAmount = sharedByIdsValue.length > 0 ? (amountValue / sharedByIdsValue.length) : 0;
-  
-  const isAllSelected = people.length > 0 && sharedByIdsValue.length === people.length;
+  const splitAmount =
+    sharedByIdsValue.length > 0 ? amountValue / sharedByIdsValue.length : 0;
+  const isAllSelected =
+    people.length > 0 && sharedByIdsValue.length === people.length;
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      setValue("sharedByIds", people.map(p => p.id), { shouldValidate: true, shouldDirty: true });
-    } else {
-      setValue("sharedByIds", [], { shouldValidate: true, shouldDirty: true });
-    }
+    setValue("sharedByIds", e.target.checked ? people.map((p) => p.id) : [], {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="quantity">Quantity (Bottles)</Label>
-          <Input id="quantity" type="number" step="1" {...register("quantity", { setValueAs: (v) => v === "" ? undefined : Number(v) })} placeholder="1" />
-          {errors.quantity && <p className="text-sm text-red-500">{errors.quantity.message}</p>}
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div className="grid grid-cols-2 gap-3.5">
+        <div>
+          <Label htmlFor="quantity">Bottles Refilled</Label>
+          <Input
+            id="quantity"
+            type="number"
+            step="1"
+            min="1"
+            {...register("quantity", {
+              setValueAs: (v) => (v === "" ? undefined : Number(v)),
+            })}
+            placeholder="1"
+          />
+          {errors.quantity && (
+            <p className="text-xs text-rose-600 mt-1">{errors.quantity.message}</p>
+          )}
         </div>
-        <div className="space-y-2">
+        <div>
           <Label htmlFor="totalCost">Total Cost (Ks)</Label>
-          <Input id="totalCost" type="number" step="0.01" {...register("totalCost", { setValueAs: (v) => v === "" ? undefined : Number(v) })} placeholder="2000" />
-          {errors.totalCost && <p className="text-sm text-red-500">{errors.totalCost.message}</p>}
+          <Input
+            id="totalCost"
+            type="number"
+            step="1"
+            {...register("totalCost", {
+              setValueAs: (v) => (v === "" ? undefined : Number(v)),
+            })}
+            placeholder="2000"
+          />
+          {errors.totalCost && (
+            <p className="text-xs text-rose-600 mt-1">{errors.totalCost.message}</p>
+          )}
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div>
         <Label htmlFor="purchaseDate">Purchase Date</Label>
         <Input id="purchaseDate" type="date" {...register("purchaseDate")} />
-        {errors.purchaseDate && <p className="text-sm text-red-500">{errors.purchaseDate.message}</p>}
+        {errors.purchaseDate && (
+          <p className="text-xs text-rose-600 mt-1">{errors.purchaseDate.message}</p>
+        )}
       </div>
 
-      <div className="space-y-3 pt-2">
-        <div className="flex items-center justify-between">
-          <Label>Shared By</Label>
-          <span className="text-xs font-semibold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-500/10 px-2 py-1 rounded-full border border-sky-100 dark:border-sky-500/20">
-            Split Amount: {splitAmount > 0 ? splitAmount.toLocaleString(undefined, { maximumFractionDigits: 2 }) : 0} Ks / person
+      <div className="space-y-2.5 pt-2 border-t border-[var(--border)]">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <Label className="mb-0">Shared By</Label>
+          <span className="inline-flex items-center rounded-full bg-[#EAF6ED] dark:bg-[#2CA548]/15 border border-[#146B26]/15 px-2.5 py-0.5 text-xs font-bold text-[#146B26] dark:text-[#4ADE80] tabular-nums">
+            {splitAmount > 0
+              ? `${splitAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })} Ks / person`
+              : "0 Ks / person"}
           </span>
         </div>
-        
+
         {people.length > 0 && (
-          <div className="flex items-center pb-2">
-            <label className="flex items-center gap-2 text-sm font-semibold cursor-pointer text-gray-700 dark:text-gray-300">
-              <input 
-                type="checkbox" 
-                checked={isAllSelected}
-                onChange={handleSelectAll}
-                className="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
-              />
-              Select All ({sharedByIdsValue.length}/{people.length})
-            </label>
-          </div>
+          <label className="inline-flex items-center gap-2 text-xs font-semibold cursor-pointer text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
+            <input
+              type="checkbox"
+              checked={isAllSelected}
+              onChange={handleSelectAll}
+              className="h-4 w-4 rounded accent-[#002B5B] dark:accent-[#2D7DD2] cursor-pointer"
+            />
+            Select All ({sharedByIdsValue.length}/{people.length})
+          </label>
         )}
 
-        <div className="grid grid-cols-2 gap-2 max-h-[150px] overflow-y-auto p-2 border border-white/20 bg-white/30 dark:bg-black/20 rounded-xl shadow-inner backdrop-blur-sm">
+        <div className="grid grid-cols-2 gap-1.5 max-h-[150px] overflow-y-auto p-2 rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)]">
           {people.length === 0 ? (
-            <div className="col-span-2 py-4 text-center text-sm font-medium text-rose-500">
-              No active people found!
+            <div className="col-span-2 py-4 text-center text-xs font-medium text-rose-600">
+              No active residents found.
             </div>
           ) : (
-            people.map(person => (
-              <label key={person.id} className="flex items-center gap-2 text-sm font-medium cursor-pointer p-2 rounded-lg hover:bg-white/50 dark:hover:bg-white/10 transition-colors">
-                <input 
-                  type="checkbox" 
+            people.map((person) => (
+              <label
+                key={person.id}
+                className="flex items-center gap-2 text-xs font-medium cursor-pointer p-2 rounded-lg hover:bg-[var(--surface)] transition-colors truncate"
+              >
+                <input
+                  type="checkbox"
                   value={person.id}
                   {...register("sharedByIds")}
-                  className="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
+                  className="h-4 w-4 rounded accent-[#002B5B] dark:accent-[#2D7DD2] shrink-0 cursor-pointer"
                 />
-                {person.fullName}
+                <span className="truncate text-[var(--foreground)]">{person.fullName}</span>
               </label>
             ))
           )}
         </div>
-        {errors.sharedByIds && <p className="text-sm text-red-500">{errors.sharedByIds.message}</p>}
+        {errors.sharedByIds && (
+          <p className="text-xs text-rose-600">{errors.sharedByIds.message}</p>
+        )}
       </div>
 
-      <div className="flex justify-end gap-2 pt-4">
-        <Button 
-          type="button" 
-          variant="outline" 
-          onClick={() => router.push('/water')} 
-          disabled={isSubmitting}
-        >
-          Cancel
-        </Button>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : "Log Purchase"}
+      <div className="flex justify-end pt-3 border-t border-[var(--border)]">
+        <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
+          {isSubmitting ? "Saving..." : "Log Restock"}
         </Button>
       </div>
     </form>

@@ -2,33 +2,41 @@ import { getExpenses } from "@/actions/expenses";
 import { getPeople } from "@/actions/people";
 import { ExpenseModal } from "@/components/forms/expense-modal";
 import { ExpenseTable } from "@/components/expense-table";
+import { PageHeader } from "@/components/ui/page-header";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import prisma from "@/lib/db";
 
 export default async function ExpensesPage() {
-  const { data: expenses } = await getExpenses();
-  const { data: allPeople } = await getPeople();
+  const [expensesRes, peopleRes, session] = await Promise.all([
+    getExpenses(),
+    getPeople(),
+    auth.api.getSession({ headers: await headers() }),
+  ]);
 
-  const session = await auth.api.getSession({ headers: await headers() });
-  let isAdmin = false;
-  if (session?.user?.id) {
-    const dbUser = await prisma.user.findUnique({ where: { id: session.user.id } });
-    isAdmin = dbUser?.role === "ADMIN";
-  }
-  const activePeople = allPeople?.filter((p: any) => p.isActive) || [];
+  const expenses = expensesRes.data || [];
+  const allPeople = peopleRes.data || [];
+  const activePeople = allPeople.filter((p: any) => p.isActive);
+
+  const dbUser = session?.user?.id
+    ? await prisma.user.findUnique({ where: { id: session.user.id } })
+    : null;
+  const isAdmin = dbUser?.role === "ADMIN";
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col">
-        <h1 className="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-500 dark:from-white dark:to-gray-400">
-          Expenses Log
-        </h1>
-        <p className="text-gray-500 mt-2">Track shared dormitory costs like utilities and water.</p>
-        {isAdmin && <ExpenseModal people={activePeople} />}
-      </div>
-      
-      <ExpenseTable expenses={expenses || []} people={allPeople || []} isAdmin={isAdmin} />
+    <div className="space-y-5 md:space-y-6">
+      <PageHeader
+        eyebrow="Finance & Ledger"
+        title="Shared Expenses"
+        description="Track shared utilities, supplies, and transparent per-resident cost splits."
+        mobileTabs={[
+          { label: "Shared Expenses", href: "/expenses", active: true },
+          { label: "Dormitory Fees", href: "/fees", active: false },
+        ]}
+        action={isAdmin ? <ExpenseModal people={activePeople} /> : undefined}
+      />
+
+      <ExpenseTable expenses={expenses} people={allPeople} isAdmin={isAdmin} />
     </div>
   );
 }

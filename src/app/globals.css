@@ -4,107 +4,148 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-navy-hover: var(--brand-navy-hover);
+  --color-brand-navy-soft: var(--brand-navy-soft);
+  --color-brand-green: var(--brand-green);
+  --color-brand-green-hover: var(--brand-green-hover);
+  --color-brand-green-soft: var(--brand-green-soft);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  
-  --color-primary-50: #eef2ff;
-  --color-primary-100: #e0e7ff;
-  --color-primary-500: #6366f1;
-  --color-primary-600: #4f46e5;
-  --color-primary-700: #4338ca;
-  --color-primary-900: #312e81;
-
-  --color-surface-glass: rgba(255, 255, 255, 0.7);
-  --color-surface-glass-dark: rgba(15, 15, 20, 0.7);
 }
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  /* Light Mode — Crisp Architectural Ivory & Executive Navy */
+  --background: #f5f7fa;
+  --foreground: #0b172a;
+  --surface: #ffffff;
+  --surface-elevated: #f8fafc;
+  --border: #e2e8f0;
+  --muted: #eef2f6;
+  --muted-foreground: #52627a;
+
+  /* Logo-derived Brand Tokens */
+  --brand-navy: #002b5b;
+  --brand-navy-hover: #003b7a;
+  --brand-navy-soft: #eaf1f8;
+  --brand-green: #146b26;
+  --brand-green-hover: #0f561e;
+  --brand-green-soft: #eaf6ed;
+
+  --shadow-card: 0 1px 2px rgba(0, 27, 61, 0.04), 0 4px 16px -4px rgba(0, 27, 61, 0.05);
+  --shadow-elevated: 0 10px 30px -8px rgba(0, 27, 61, 0.14), 0 2px 8px -2px rgba(0, 27, 61, 0.06);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
-    --background: #020617;
-    --foreground: #f8fafc;
+    --background: #060b14;
+    --foreground: #f1f5f9;
+    --surface: #0c1424;
+    --surface-elevated: #121d32;
+    --border: rgba(148, 163, 184, 0.14);
+    --muted: #152138;
+    --muted-foreground: #94a3b8;
+
+    --brand-navy: #2d7dd2;
+    --brand-navy-hover: #3b8ee6;
+    --brand-navy-soft: rgba(45, 125, 210, 0.15);
+    --brand-green: #2ca548;
+    --brand-green-hover: #36be55;
+    --brand-green-soft: rgba(44, 165, 72, 0.15);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 24px -8px rgba(0, 0, 0, 0.45);
+    --shadow-elevated: 0 16px 40px -10px rgba(0, 0, 0, 0.65);
   }
 }
 
 .dark {
-  --background: #020617;
-  --foreground: #f8fafc;
+  /* Dark Mode — Deep Obsidian Executive Navy */
+  --background: #060b14;
+  --foreground: #f1f5f9;
+  --surface: #0c1424;
+  --surface-elevated: #121d32;
+  --border: rgba(148, 163, 184, 0.14);
+  --muted: #152138;
+  --muted-foreground: #94a3b8;
+
+  --brand-navy: #2d7dd2;
+  --brand-navy-hover: #3b8ee6;
+  --brand-navy-soft: rgba(45, 125, 210, 0.15);
+  --brand-green: #2ca548;
+  --brand-green-hover: #36be55;
+  --brand-green-soft: rgba(44, 165, 72, 0.15);
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 24px -8px rgba(0, 0, 0, 0.45);
+  --shadow-elevated: 0 16px 40px -10px rgba(0, 0, 0, 0.65);
 }
 
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
-  overflow-x: hidden;
-}
-
-/* Modern 2026 Ambient Animated Mesh Background */
-.ambient-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-  overflow: hidden;
   background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.ambient-bg::before,
-.ambient-bg::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.5;
-  animation: float 20s infinite alternate ease-in-out;
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
 
-.ambient-bg::before {
-  top: -10%;
-  left: -10%;
-  width: 60vw;
-  height: 60vw;
-  background: radial-gradient(circle, rgba(99,102,241,0.4) 0%, rgba(99,102,241,0) 70%);
+.surface-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
 }
 
-.ambient-bg::after {
-  bottom: -20%;
-  right: -10%;
-  width: 70vw;
-  height: 70vw;
-  background: radial-gradient(circle, rgba(168,85,247,0.3) 0%, rgba(168,85,247,0) 70%);
-  animation-delay: -10s;
+.surface-elevated {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-elevated);
 }
 
-@keyframes float {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(5%, 5%) scale(1.1);
-  }
-  100% {
-    transform: translate(-5%, 10%) scale(0.9);
-  }
+/* Safe area support for mobile bottom navigation & sheets */
+.pb-safe {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
 }
 
-/* Scrollbar customization for a premium feel */
+/* Subtle executive grid pattern for brand hero panels */
+.bg-luxury-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+/* Refined thin scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.5);
-  border-radius: 10px;
+  background: rgba(100, 116, 139, 0.28);
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(156, 163, 175, 0.8);
+  background: rgba(100, 116, 139, 0.5);
+}
+
+/* Hide scrollbar utility for horizontal pill strips on mobile */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

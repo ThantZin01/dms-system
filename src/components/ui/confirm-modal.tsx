@@ -1,5 +1,8 @@
+"use client";
+
 import { Modal } from "./modal";
-import { AlertCircle } from "lucide-react";
+import { Button } from "./button";
+import { AlertTriangle } from "lucide-react";
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -8,32 +11,49 @@ interface ConfirmModalProps {
   title: string;
   message: string;
   confirmText?: string;
+  isLoading?: boolean;
 }
 
-export function ConfirmModal({ isOpen, onClose, onConfirm, title, message, confirmText = "Delete" }: ConfirmModalProps) {
+export function ConfirmModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  message,
+  confirmText = "Delete",
+  isLoading = false,
+}: ConfirmModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      <div className="flex flex-col items-center justify-center text-center space-y-4 py-4">
-        <div className="h-12 w-12 rounded-full bg-rose-100 dark:bg-rose-500/20 flex items-center justify-center text-rose-500 mb-2">
-          <AlertCircle size={24} />
+    <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
+      <div className="flex flex-col items-center text-center space-y-4 py-2">
+        <div className="h-12 w-12 rounded-2xl bg-rose-50 dark:bg-rose-500/15 border border-rose-200/80 dark:border-rose-500/25 flex items-center justify-center text-rose-600 dark:text-rose-400">
+          <AlertTriangle className="h-6 w-6" />
         </div>
-        <h3 className="text-lg font-semibold">{title}</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm">
-          {message}
-        </p>
-        <div className="flex items-center gap-3 w-full pt-4">
-          <button 
+        <div className="space-y-1.5">
+          <h3 className="text-base font-bold text-[var(--foreground)]">{title}</h3>
+          <p className="text-sm text-[var(--muted-foreground)] leading-relaxed max-w-xs mx-auto">
+            {message}
+          </p>
+        </div>
+        <div className="flex flex-col-reverse sm:flex-row items-center gap-2.5 w-full pt-2">
+          <Button
+            type="button"
+            variant="outline"
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            disabled={isLoading}
+            className="w-full sm:flex-1"
           >
             Cancel
-          </button>
-          <button 
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
             onClick={onConfirm}
-            className="flex-1 px-4 py-2.5 bg-rose-500 text-white rounded-xl font-medium hover:bg-rose-600 transition-colors shadow-lg shadow-rose-500/30"
+            disabled={isLoading}
+            className="w-full sm:flex-1"
           >
-            {confirmText}
-          </button>
+            {isLoading ? "Processing..." : confirmText}
+          </Button>
         </div>
       </div>
     </Modal>

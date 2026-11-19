@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Modal } from "@/components/ui/modal";
+import { Button } from "@/components/ui/button";
 import { FeeForm } from "./fee-form";
 import { Plus } from "lucide-react";
 
@@ -14,13 +15,31 @@ export function FeeModal({ people }: FeeModalProps) {
 
   return (
     <>
-      <button 
+      <Button
+        type="button"
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-8 right-8 z-40 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-xl shadow-blue-500/40 hover:scale-110 hover:shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 group"
+        className="hidden md:inline-flex"
       >
-        <Plus className="h-8 w-8 transition-transform duration-300 group-hover:rotate-90" />
+        <Plus className="h-4 w-4" />
+        Record Payment
+      </Button>
+
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        aria-label="Record Fee Payment"
+        className="md:hidden fixed bottom-[78px] right-4 z-30 inline-flex items-center gap-2 h-12 px-4 rounded-full bg-[#002B5B] dark:bg-[#1E6BB8] text-white text-sm font-semibold shadow-lg shadow-[#002B5B]/30 active:scale-95 transition-transform cursor-pointer"
+      >
+        <Plus className="h-5 w-5" />
+        <span>Record</span>
       </button>
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Log Fee Payment">
+
+      <Modal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        title="Record Fee Payment"
+        subtitle="Log a 3-month dormitory fee coverage period."
+      >
         <FeeForm onSuccess={() => setIsOpen(false)} people={people} />
       </Modal>
     </>

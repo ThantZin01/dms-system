@@ -34,6 +34,7 @@ export async function createFee(data: any) {
       },
     });
     revalidatePath("/fees");
+    revalidatePath("/");
     return { success: true, data: fee };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -70,6 +71,7 @@ export async function updateFee(id: string, data: any) {
       },
     });
     revalidatePath("/fees");
+    revalidatePath("/");
     return { success: true, data: fee };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -88,6 +90,7 @@ export async function deleteFee(id: string) {
       where: { id },
     });
     revalidatePath("/fees");
+    revalidatePath("/");
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

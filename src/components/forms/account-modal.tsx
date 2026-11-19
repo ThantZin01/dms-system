@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Modal } from "@/components/ui/modal";
+import { Button } from "@/components/ui/button";
 import { AccountForm } from "./account-form";
 import { Plus } from "lucide-react";
 
@@ -10,13 +11,31 @@ export function AccountModal() {
 
   return (
     <>
-      <button 
+      <Button
+        type="button"
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-8 right-8 z-40 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-rose-600 text-white shadow-xl shadow-pink-500/40 hover:scale-110 hover:shadow-2xl hover:shadow-pink-500/50 transition-all duration-300 group"
+        className="hidden md:inline-flex"
       >
-        <Plus className="h-8 w-8 transition-transform duration-300 group-hover:rotate-90" />
+        <Plus className="h-4 w-4" />
+        Create Account
+      </Button>
+
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        aria-label="Create Account"
+        className="md:hidden fixed bottom-[78px] right-4 z-30 inline-flex items-center gap-2 h-12 px-4 rounded-full bg-[#002B5B] dark:bg-[#1E6BB8] text-white text-sm font-semibold shadow-lg shadow-[#002B5B]/30 active:scale-95 transition-transform cursor-pointer"
+      >
+        <Plus className="h-5 w-5" />
+        <span>Create</span>
       </button>
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Create User Account">
+
+      <Modal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        title="Create User Account"
+        subtitle="Provision login access and role permissions."
+      >
         <AccountForm onSuccess={() => setIsOpen(false)} />
       </Modal>
     </>

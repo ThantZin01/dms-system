@@ -1,7 +1,8 @@
 "use client";
 
-import { useLocale } from 'next-intl';
-import { usePathname, useRouter } from '@/i18n/routing';
+import { useLocale } from "next-intl";
+import { usePathname, useRouter } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
 
 export function LanguageToggle() {
   const locale = useLocale();
@@ -12,28 +13,31 @@ export function LanguageToggle() {
     router.replace(pathname, { locale: newLocale });
   };
 
+  const options = [
+    { id: "en", label: "English" },
+    { id: "my", label: "မြန်မာ (Burmese)" },
+  ];
+
   return (
-    <div className="flex gap-4 items-center h-[50px]">
-      <button
-        onClick={() => changeLanguage('en')}
-        className={`px-4 py-2 rounded-xl font-medium transition-all hover:scale-105 border-2 shadow-sm ${
-          locale === 'en' 
-            ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 ring-2 ring-emerald-500/20'
-            : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-500 hover:text-gray-900 dark:hover:text-white'
-        }`}
-      >
-        English
-      </button>
-      <button
-        onClick={() => changeLanguage('my')}
-        className={`px-4 py-2 rounded-xl font-medium transition-all hover:scale-105 border-2 shadow-sm ${
-          locale === 'my' 
-            ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 ring-2 ring-emerald-500/20'
-            : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-500 hover:text-gray-900 dark:hover:text-white'
-        }`}
-      >
-        Burmese
-      </button>
+    <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-[var(--muted)] border border-[var(--border)]">
+      {options.map((opt) => {
+        const active = locale === opt.id;
+        return (
+          <button
+            key={opt.id}
+            type="button"
+            onClick={() => changeLanguage(opt.id)}
+            className={cn(
+              "flex items-center justify-center h-9 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer",
+              active
+                ? "bg-[var(--surface)] text-[#002B5B] dark:text-white shadow-xs ring-1 ring-[#002B5B]/10 dark:ring-white/10"
+                : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+            )}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
     </div>
   );
 }

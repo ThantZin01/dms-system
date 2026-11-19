@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Modal } from "@/components/ui/modal";
+import { Button } from "@/components/ui/button";
 import { GarbageForm } from "./garbage-form";
 import { Plus } from "lucide-react";
 
@@ -15,14 +16,36 @@ export function GarbageModal({ people, upNextId }: GarbageModalProps) {
 
   return (
     <>
-      <button 
+      <Button
+        type="button"
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-8 right-8 z-40 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-xl shadow-orange-500/40 hover:scale-110 hover:shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 group"
+        className="hidden md:inline-flex"
       >
-        <Plus className="h-8 w-8 transition-transform duration-300 group-hover:rotate-90" />
+        <Plus className="h-4 w-4" />
+        Log Turn
+      </Button>
+
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        aria-label="Log Garbage Turn"
+        className="md:hidden fixed bottom-[78px] right-4 z-30 inline-flex items-center gap-2 h-12 px-4 rounded-full bg-[#002B5B] dark:bg-[#1E6BB8] text-white text-sm font-semibold shadow-lg shadow-[#002B5B]/30 active:scale-95 transition-transform cursor-pointer"
+      >
+        <Plus className="h-5 w-5" />
+        <span>Log Turn</span>
       </button>
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Log Garbage Collection">
-        <GarbageForm onSuccess={() => setIsOpen(false)} people={people} upNextId={upNextId} />
+
+      <Modal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        title="Log Garbage Collection"
+        subtitle="Record who completed the duty and advance the rotation."
+      >
+        <GarbageForm
+          onSuccess={() => setIsOpen(false)}
+          people={people}
+          upNextId={upNextId}
+        />
       </Modal>
     </>
   );

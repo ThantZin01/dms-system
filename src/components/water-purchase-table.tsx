@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import { Trash2, Droplet, Eye } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Trash2, Droplet, Eye, Users, Calendar, ChevronRight } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { deleteWaterPurchase } from "@/actions/water";
 import { Modal } from "@/components/ui/modal";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/routing";
 import { format } from "date-fns";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ResponsiveDataView, ColumnDef } from "@/components/ui/data-table";
 
 interface WaterPurchaseTableProps {
   purchases: any[];
@@ -20,6 +24,11 @@ export function WaterPurchaseTable({ purchases, isAdmin }: WaterPurchaseTablePro
   const [viewingPurchase, setViewingPurchase] = useState<any>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
+  const totalSpent = useMemo(
+    () => purchases.reduce((sum, p) => sum + (Number(p.totalCost) || 0), 0),
+    [purchases]
+  );
+
   const handleDelete = async () => {
     if (!deleteId) return;
     const id = deleteId;
@@ -30,125 +39,248 @@ export function WaterPurchaseTable({ purchases, isAdmin }: WaterPurchaseTablePro
     if (res.error) {
       toast.error(res.error);
     } else {
-      toast.success("Purchase deleted successfully!");
+      toast.success("Purchase record deleted");
+      if (viewingPurchase?.id === id) setViewingPurchase(null);
       router.refresh();
     }
   };
 
+  const columns: ColumnDef<any>[] = [
+    {
+      key: "date",
+      header: "Date",
+      render: (p) => (
+        <span className="text-[var(--muted-foreground)] tabular-nums whitespace-nowrap">
+          {format(new Date(p.purchaseDate), "MMM d, yyyy")}
+        </span>
+      ),
+    },
+    {
+      key: "qty",
+      header: "Quantity",
+      render: (p) => (
+        <Badge variant="sky">
+          {p.quantity} {p.quantity === 1 ? "bottle" : "bottles"}
+        </Badge>
+      ),
+    },
+    {
+      key: "shared",
+      header: "Shared By",
+      render: (p) => (
+        <span className="text-xs text-[var(--muted-foreground)]">
+          {p.sharedBy?.length ? `${p.sharedBy.length} residents` : "Everyone"}
+        </span>
+      ),
+    },
+    {
+      key: "cost",
+      header: "Total Cost",
+      align: "right",
+      render: (p) => (
+        <span className="font-bold text-[var(--foreground)] tabular-nums whitespace-nowrap">
+          {p.totalCost.toLocaleString()} Ks
+        </span>
+      ),
+    },
+    {
+      key: "split",
+      header: "Per Person",
+      align: "right",
+      render: (p) => (
+        <span className="font-semibold text-[#146B26] dark:text-[#4ADE80] tabular-nums whitespace-nowrap">
+          {Math.round(p.costPerPerson).toLocaleString()} Ks
+        </span>
+      ),
+    },
+    {
+      key: "actions",
+      header: "Actions",
+      align: "right",
+      render: (p) => (
+        <div
+          className="inline-flex items-center justify-end gap-1"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            type="button"
+            onClick={() => setViewingPurchase(p)}
+            className="p-2 rounded-lg text-slate-400 hover:text-[#002B5B] dark:hover:text-[#7BB8F7] hover:bg-[var(--muted)] transition-colors cursor-pointer"
+            title="View Details"
+          >
+            <Eye className="h-4 w-4" />
+          </button>
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={() => setDeleteId(p.id)}
+              disabled={deletingId === p.id}
+              className="p-2 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors disabled:opacity-40 cursor-pointer"
+              title="Delete"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <>
-      <div className="rounded-2xl bg-white/50 dark:bg-black/20 p-1 mt-6">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left border-collapse min-w-[700px]">
-            <thead>
-              <tr>
-                <th className="px-6 py-4 font-semibold text-gray-500 border-b border-gray-200/50 dark:border-gray-800/50">Date</th>
-                <th className="px-6 py-4 font-semibold text-gray-500 border-b border-gray-200/50 dark:border-gray-800/50 text-center">Quantity</th>
-                <th className="px-6 py-4 font-semibold text-gray-500 border-b border-gray-200/50 dark:border-gray-800/50 text-right">Total Cost (Ks)</th>
-                <th className="px-6 py-4 font-semibold text-gray-500 border-b border-gray-200/50 dark:border-gray-800/50 text-right">Split Cost (Ks)</th>
-                {isAdmin && (
-                  <th className="px-6 py-4 font-semibold text-gray-500 border-b border-gray-200/50 dark:border-gray-800/50 text-right">Actions</th>
-                )}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200/50 dark:divide-gray-800/50">
-              {purchases?.map((purchase) => (
-                <tr key={purchase.id} className="group hover:bg-white/60 dark:hover:bg-white/5 transition-colors">
-                  <td className="px-6 py-4 text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                    {format(new Date(purchase.purchaseDate), "PPP")}
-                  </td>
-                  <td className="px-6 py-4 text-center font-medium text-gray-900 dark:text-gray-100">
-                    <div className="flex items-center justify-center gap-1">
-                      {purchase.quantity} <Droplet size={14} className="text-sky-500" />
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 font-bold text-gray-900 dark:text-white text-right">
-                    {purchase.totalCost.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 font-semibold text-sky-600 dark:text-sky-400 text-right">
-                    {purchase.costPerPerson.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                  </td>
-                  {isAdmin && (
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button
-                          onClick={() => setViewingPurchase(purchase)}
-                          className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-full transition-colors"
-                          title="View Details"
-                        >
-                          <Eye size={16} />
-                        </button>
-                        <button
-                          onClick={() => setDeleteId(purchase.id)}
-                          disabled={deletingId === purchase.id}
-                          className="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-full transition-colors disabled:opacity-50"
-                          title="Delete"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  )}
-                </tr>
-              ))}
-              {(!purchases || purchases.length === 0) && (
-                <tr>
-                  <td colSpan={isAdmin ? 5 : 4} className="px-6 py-12 text-center text-gray-500">
-                    <div className="flex flex-col items-center justify-center">
-                      <p className="text-lg font-medium mb-1">No water purchases found</p>
-                      <p className="text-sm">Log a purchase when you restock empty bottles.</p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-2">
+        <div>
+          <h2 className="text-base font-bold text-[var(--foreground)]">Restock History</h2>
+          <p className="text-xs text-[var(--muted-foreground)]">
+            {purchases.length} logged water deliveries
+          </p>
+        </div>
+        <div className="inline-flex items-center gap-2 rounded-xl bg-[var(--surface)] border border-[var(--border)] px-3 py-1.5 text-xs">
+          <span className="text-[var(--muted-foreground)] font-medium">Total Spent:</span>
+          <span className="font-bold text-[#002B5B] dark:text-[#7BB8F7] tabular-nums">
+            {totalSpent.toLocaleString()} Ks
+          </span>
         </div>
       </div>
 
-      <ConfirmModal 
-        isOpen={!!deleteId} 
-        onClose={() => setDeleteId(null)} 
-        onConfirm={handleDelete}
-        title="Delete Purchase Log"
-        message="Are you sure you want to delete this purchase log? This action cannot be undone."
+      <ResponsiveDataView
+        data={purchases}
+        columns={columns}
+        onRowClick={(p) => setViewingPurchase(p)}
+        emptyState={
+          <EmptyState
+            icon={Droplet}
+            title="No restock logs yet"
+            description="Log a restock whenever empty bottles are refilled to auto-calculate resident shares."
+          />
+        }
+        renderMobileCard={(purchase) => (
+          <button
+            type="button"
+            onClick={() => setViewingPurchase(purchase)}
+            className="w-full text-left surface-card rounded-2xl p-4 active:scale-[0.99] transition-transform cursor-pointer"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <Badge variant="sky">
+                    {purchase.quantity} {purchase.quantity === 1 ? "Bottle" : "Bottles"}
+                  </Badge>
+                  <span className="text-xs text-[var(--muted-foreground)] tabular-nums">
+                    {format(new Date(purchase.purchaseDate), "MMM d, yyyy")}
+                  </span>
+                </div>
+                <p className="text-xs text-[var(--muted-foreground)] mt-1.5">
+                  Split across {purchase.sharedBy?.length || 0} residents
+                </p>
+              </div>
+              <div className="flex items-center gap-1 shrink-0">
+                <div className="text-right">
+                  <p className="text-sm font-bold text-[var(--foreground)] tabular-nums">
+                    {purchase.totalCost.toLocaleString()} Ks
+                  </p>
+                  <p className="text-[11px] font-semibold text-[#146B26] dark:text-[#4ADE80] tabular-nums">
+                    {Math.round(purchase.costPerPerson).toLocaleString()} / ea
+                  </p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-400" />
+              </div>
+            </div>
+          </button>
+        )}
       />
 
-      <Modal isOpen={!!viewingPurchase} onClose={() => setViewingPurchase(null)} title="Purchase Details">
+      <Modal
+        isOpen={!!viewingPurchase}
+        onClose={() => setViewingPurchase(null)}
+        title="Water Restock Receipt"
+        subtitle={
+          viewingPurchase
+            ? format(new Date(viewingPurchase.purchaseDate), "MMMM d, yyyy")
+            : undefined
+        }
+        variant="drawer"
+      >
         {viewingPurchase && (
-          <div className="space-y-4 text-sm">
-            <div className="grid grid-cols-1 gap-4">
-              <div>
-                <p className="text-gray-500 dark:text-gray-400">Date</p>
-                <p className="font-medium text-gray-900 dark:text-gray-100">{format(new Date(viewingPurchase.purchaseDate), "PPP")}</p>
+          <div className="space-y-5">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl bg-[#001B3A] dark:bg-[#122645] text-white p-3.5">
+                <p className="text-[10px] uppercase tracking-wider text-slate-300">
+                  Total Cost
+                </p>
+                <p className="text-lg font-bold tabular-nums mt-0.5">
+                  {viewingPurchase.totalCost.toLocaleString()} Ks
+                </p>
               </div>
-              <div>
-                <p className="text-gray-500 dark:text-gray-400">Quantity Restocked</p>
-                <p className="font-medium text-gray-900 dark:text-gray-100">{viewingPurchase.quantity} bottles</p>
-              </div>
-              <div>
-                <p className="text-gray-500 dark:text-gray-400">Total Cost</p>
-                <p className="font-medium text-gray-900 dark:text-gray-100">{viewingPurchase.totalCost.toLocaleString()} Ks</p>
-              </div>
-              <div>
-                <p className="text-gray-500 dark:text-gray-400">Split Cost Per Person</p>
-                <p className="font-medium text-sky-600 dark:text-sky-400">{viewingPurchase.costPerPerson.toLocaleString(undefined, { maximumFractionDigits: 2 })} Ks</p>
-              </div>
-              <div>
-                <p className="text-gray-500 dark:text-gray-400">Shared By</p>
-                <p className="font-medium text-gray-900 dark:text-gray-100">
-                  {viewingPurchase.sharedBy?.length ? viewingPurchase.sharedBy.map((p: any) => p.fullName).join(", ") : "Everyone"}
+              <div className="rounded-xl bg-[#EAF6ED] dark:bg-[#2CA548]/15 p-3.5">
+                <p className="text-[10px] uppercase tracking-wider text-[#146B26] dark:text-[#4ADE80] font-semibold">
+                  Per Resident
+                </p>
+                <p className="text-lg font-bold text-[#0F561E] dark:text-white tabular-nums mt-0.5">
+                  {Math.round(viewingPurchase.costPerPerson).toLocaleString()} Ks
                 </p>
               </div>
             </div>
-            <div className="flex justify-end pt-4">
-              <button onClick={() => setViewingPurchase(null)} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-medium">
-                Close
-              </button>
+
+            <div className="space-y-3 text-xs">
+              <div className="flex items-center justify-between py-2 border-b border-[var(--border)]">
+                <span className="flex items-center gap-1.5 text-[var(--muted-foreground)]">
+                  <Calendar className="h-3.5 w-3.5" />
+                  Date
+                </span>
+                <span className="font-semibold text-[var(--foreground)] tabular-nums">
+                  {format(new Date(viewingPurchase.purchaseDate), "MMMM d, yyyy")}
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-2 border-b border-[var(--border)]">
+                <span className="text-[var(--muted-foreground)]">Quantity Refilled</span>
+                <span className="font-bold text-[var(--foreground)]">
+                  {viewingPurchase.quantity} bottles
+                </span>
+              </div>
+              <div className="py-2">
+                <p className="flex items-center gap-1.5 text-[var(--muted-foreground)] mb-2">
+                  <Users className="h-3.5 w-3.5" />
+                  Shared By ({viewingPurchase.sharedBy?.length || 0})
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {viewingPurchase.sharedBy?.length ? (
+                    viewingPurchase.sharedBy.map((p: any) => (
+                      <Badge key={p.id} variant="navy">
+                        {p.fullName}
+                      </Badge>
+                    ))
+                  ) : (
+                    <span className="text-[var(--muted-foreground)]">Everyone</span>
+                  )}
+                </div>
+              </div>
             </div>
+
+            {isAdmin && (
+              <div className="pt-4 border-t border-[var(--border)]">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  className="w-full"
+                  onClick={() => setDeleteId(viewingPurchase.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Delete Restock Log
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </Modal>
-    </>
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={handleDelete}
+        title="Delete Purchase Log"
+        message="Are you sure you want to delete this water purchase log? This cannot be undone."
+      />
+    </div>
   );
 }

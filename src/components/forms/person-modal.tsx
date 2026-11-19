@@ -11,14 +11,31 @@ export function PersonModal({ users }: { users?: any[] }) {
 
   return (
     <>
-      <button 
+      <Button
+        type="button"
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-8 right-8 z-40 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-xl shadow-indigo-500/40 hover:scale-110 hover:shadow-2xl hover:shadow-indigo-500/50 transition-all duration-300 group"
+        className="hidden md:inline-flex"
       >
-        <Plus className="h-8 w-8 transition-transform duration-300 group-hover:rotate-90" />
+        <Plus className="h-4 w-4" />
+        Add Resident
+      </Button>
+
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        aria-label="Add Resident"
+        className="md:hidden fixed bottom-[78px] right-4 z-30 inline-flex items-center gap-2 h-12 px-4 rounded-full bg-[#002B5B] dark:bg-[#1E6BB8] text-white text-sm font-semibold shadow-lg shadow-[#002B5B]/30 active:scale-95 transition-transform cursor-pointer"
+      >
+        <Plus className="h-5 w-5" />
+        <span>Add</span>
       </button>
-      
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Add Person">
+
+      <Modal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        title="Add Resident"
+        subtitle="Register a new dormitory member and optional user link."
+      >
         <PersonForm onSuccess={() => setIsOpen(false)} users={users} />
       </Modal>
     </>

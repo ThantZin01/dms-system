@@ -129,6 +129,7 @@ export async function logWaterPurchase(data: any) {
     }
 
     revalidatePath("/water");
+    revalidatePath("/");
     return { success: true, data: purchase };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -140,6 +141,7 @@ export async function deleteWaterPurchase(id: string) {
     await checkAdmin();
     await prisma.waterPurchase.delete({ where: { id } });
     revalidatePath("/water");
+    revalidatePath("/");
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

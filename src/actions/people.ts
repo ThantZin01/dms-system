@@ -31,6 +31,7 @@ export async function createPerson(data: any) {
       data: parsed.data,
     });
     revalidatePath("/people");
+    revalidatePath("/");
     return { success: true, data: person };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -75,6 +76,7 @@ export async function updatePerson(id: string, data: any) {
       data: parsed.data,
     });
     revalidatePath("/people");
+    revalidatePath("/");
     return { success: true, data: person };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -93,6 +95,7 @@ export async function deletePerson(id: string) {
       where: { id },
     });
     revalidatePath("/people");
+    revalidatePath("/");
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

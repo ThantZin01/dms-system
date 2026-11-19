@@ -33,7 +33,7 @@ export function AccountActions({ account }: { account: any }) {
     <div className="flex justify-end gap-2">
       <button
         onClick={() => setIsEditModalOpen(true)}
-        className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
+        className="p-2 text-slate-400 hover:text-[#146B26] dark:hover:text-[#4ADE80] hover:bg-[var(--muted)] rounded-lg transition-colors cursor-pointer"
         title="Edit Account"
       >
         <Edit2 size={16} />

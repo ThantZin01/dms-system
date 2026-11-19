@@ -1,12 +1,18 @@
 {
   "name": "Dormitory Management System",
   "short_name": "DMS",
-  "description": "Manage your dormitory tasks, expenses, and fees efficiently.",
+  "description": "Executive dormitory operations, resident registry, and shared financial ledger.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#4f46e5",
+  "background_color": "#F6F8FB",
+  "theme_color": "#002B5B",
   "icons": [
+    {
+      "src": "/images/dorm-mark.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/icons/icon.svg",
       "sizes": "any",

@@ -48,6 +48,7 @@ export async function createGarbageRecord(data: any) {
     }
 
     revalidatePath("/garbage");
+    revalidatePath("/");
     return { success: true, data: record };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -81,6 +82,7 @@ export async function updateGarbageRecord(id: string, data: any) {
       data: parsed.data,
     });
     revalidatePath("/garbage");
+    revalidatePath("/");
     return { success: true, data: record };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -99,6 +101,7 @@ export async function deleteGarbageRecord(id: string) {
       where: { id },
     });
     revalidatePath("/garbage");
+    revalidatePath("/");
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

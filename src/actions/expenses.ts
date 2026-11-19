@@ -41,6 +41,7 @@ export async function createExpense(data: any) {
       },
     });
     revalidatePath("/expenses");
+    revalidatePath("/");
     return { success: true, data: expense };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -84,6 +85,7 @@ export async function updateExpense(id: string, data: any) {
       },
     });
     revalidatePath("/expenses");
+    revalidatePath("/");
     return { success: true, data: expense };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -102,6 +104,7 @@ export async function deleteExpense(id: string) {
       where: { id },
     });
     revalidatePath("/expenses");
+    revalidatePath("/");
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -111,6 +114,7 @@ export async function deleteExpense(id: string) {
 export async function getExpenses() {
   try {
     const expenses = await prisma.expense.findMany({
+      include: { sharedBy: true },
       orderBy: { expenseDate: "desc" },
     });
     return { success: true, data: expenses };

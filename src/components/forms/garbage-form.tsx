@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { toast } from "react-hot-toast";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/routing";
 
 type FormData = z.infer<typeof garbageRecordSchema>;
 
@@ -21,7 +21,12 @@ interface GarbageFormProps {
   initialData?: any;
 }
 
-export function GarbageForm({ onSuccess, people, upNextId, initialData }: GarbageFormProps) {
+export function GarbageForm({
+  onSuccess,
+  people,
+  upNextId,
+  initialData,
+}: GarbageFormProps) {
   const router = useRouter();
   const {
     register,
@@ -30,25 +35,29 @@ export function GarbageForm({ onSuccess, people, upNextId, initialData }: Garbag
     reset,
   } = useForm<FormData>({
     resolver: zodResolver(garbageRecordSchema),
-    defaultValues: initialData ? {
-      personId: initialData.personId,
-      dateThrown: new Date(initialData.dateThrown).toISOString().split("T")[0],
-      notes: initialData.notes || "",
-    } : {
-      personId: upNextId || "",
-      dateThrown: new Date().toISOString().split("T")[0],
-    },
+    defaultValues: initialData
+      ? {
+          personId: initialData.personId,
+          dateThrown: new Date(initialData.dateThrown).toISOString().split("T")[0],
+          notes: initialData.notes || "",
+        }
+      : {
+          personId: upNextId || "",
+          dateThrown: new Date().toISOString().split("T")[0],
+        },
   });
 
   const onSubmit = async (data: FormData) => {
     try {
-      const res = initialData 
+      const res = initialData
         ? await updateGarbageRecord(initialData.id, data)
         : await createGarbageRecord(data);
 
       if (res.error) throw new Error(res.error);
-      
-      toast.success(initialData ? "Garbage record updated successfully!" : "Garbage record logged successfully!");
+
+      toast.success(
+        initialData ? "Garbage record updated" : "Garbage turn logged & rotation updated"
+      );
       reset();
       router.refresh();
       onSuccess?.();
@@ -59,36 +68,45 @@ export function GarbageForm({ onSuccess, people, upNextId, initialData }: Garbag
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="personId">Person</Label>
+      <div>
+        <Label htmlFor="personId">Resident</Label>
         <Select id="personId" {...register("personId")}>
-          <option value="">Select a person</option>
+          <option value="">Select a resident</option>
           {people.map((p) => (
             <option key={p.id} value={p.id}>
               {p.fullName}
+              {upNextId === p.id ? " (Up Next)" : ""}
             </option>
           ))}
         </Select>
-        {errors.personId && <p className="text-sm text-red-500">{errors.personId.message}</p>}
+        {errors.personId && (
+          <p className="text-xs text-rose-600 mt-1">{errors.personId.message}</p>
+        )}
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="dateThrown">Date Thrown</Label>
+      <div>
+        <Label htmlFor="dateThrown">Date Completed</Label>
         <Input id="dateThrown" type="date" {...register("dateThrown")} />
-        {errors.dateThrown && <p className="text-sm text-red-500">{errors.dateThrown.message}</p>}
+        {errors.dateThrown && (
+          <p className="text-xs text-rose-600 mt-1">{errors.dateThrown.message}</p>
+        )}
       </div>
 
-
-
-      <div className="space-y-2">
+      <div>
         <Label htmlFor="notes">Notes (Optional)</Label>
-        <Input id="notes" {...register("notes")} placeholder="Missed last week..." />
-        {errors.notes && <p className="text-sm text-red-500">{errors.notes.message}</p>}
+        <Input
+          id="notes"
+          {...register("notes")}
+          placeholder="e.g. Evening collection, swapped turn..."
+        />
+        {errors.notes && (
+          <p className="text-xs text-rose-600 mt-1">{errors.notes.message}</p>
+        )}
       </div>
 
-      <div className="flex justify-end pt-4">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : initialData ? "Save Changes" : "Log Record"}
+      <div className="flex justify-end pt-3 border-t border-[var(--border)]">
+        <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
+          {isSubmitting ? "Saving..." : initialData ? "Save Changes" : "Log Turn"}
         </Button>
       </div>
     </form>

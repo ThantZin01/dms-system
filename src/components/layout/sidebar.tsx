@@ -1,94 +1,223 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname, useRouter } from "@/i18n/routing";
-import { LayoutDashboard, Users, Trash2, Banknote, Receipt, Settings, UserCircle, Droplet, LogOut } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  Trash2,
+  Banknote,
+  Receipt,
+  Settings,
+  UserCircle,
+  Droplet,
+  LogOut,
+  PanelLeftClose,
+  PanelLeftOpen,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
+import { BrandLogo } from "@/components/brand/brand-logo";
 
-export function Sidebar({ role, name }: { role?: string, name?: string }) {
+interface SidebarProps {
+  role?: string;
+  name?: string;
+  email?: string;
+  image?: string | null;
+}
+
+export function Sidebar({ role, name, email, image }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const t = useTranslations("Sidebar");
-  
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("dms-sidebar-collapsed");
+    if (saved === "true") setCollapsed(true);
+  }, []);
+
+  const toggleCollapsed = () => {
+    const next = !collapsed;
+    setCollapsed(next);
+    localStorage.setItem("dms-sidebar-collapsed", String(next));
+  };
+
   const handleLogout = async () => {
     await authClient.signOut();
     router.push("/login");
+    router.refresh();
   };
-  
-  const links = [
-    { name: t("dashboard"), href: "/", icon: LayoutDashboard },
-    { name: t("people"), href: "/people", icon: Users },
-    { name: t("garbage"), href: "/garbage", icon: Trash2 },
-    { name: t("fees"), href: "/fees", icon: Banknote },
-    { name: t("expenses"), href: "/expenses", icon: Receipt },
-    { name: "Water Bottles", href: "/water", icon: Droplet },
-    ...(role === "ADMIN" ? [{ name: t("accounts"), href: "/accounts", icon: UserCircle }] : []),
-    { name: t("settings"), href: "/settings", icon: Settings },
+
+  const sections = [
+    {
+      label: "Overview",
+      items: [{ name: t("dashboard"), href: "/", icon: LayoutDashboard }],
+    },
+    {
+      label: "Residence",
+      items: [
+        { name: t("people"), href: "/people", icon: Users },
+        { name: t("garbage"), href: "/garbage", icon: Trash2 },
+        { name: "Water Bottles", href: "/water", icon: Droplet },
+      ],
+    },
+    {
+      label: "Finance",
+      items: [
+        { name: t("fees"), href: "/fees", icon: Banknote },
+        { name: t("expenses"), href: "/expenses", icon: Receipt },
+      ],
+    },
+    {
+      label: "Administration",
+      items: [
+        ...(role === "ADMIN"
+          ? [{ name: t("accounts"), href: "/accounts", icon: UserCircle }]
+          : []),
+        { name: t("settings"), href: "/settings", icon: Settings },
+      ],
+    },
   ];
 
   return (
-    <div className="hidden md:flex w-64 flex-col rounded-3xl bg-white/70 shadow-2xl backdrop-blur-xl border border-white/20 dark:bg-black/50 dark:border-white/10 px-4 py-8 relative">
-      <div className="flex items-center gap-3 px-3 mb-10">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/30">
-          <span className="font-bold text-lg">DM</span>
-        </div>
-        <span className="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">
-          Dormitory
-        </span>
+    <aside
+      className={cn(
+        "hidden md:flex flex-col shrink-0 h-screen bg-[#001B3A] dark:bg-[#050A14] text-slate-200 border-r border-white/10 transition-[width] duration-200 ease-out select-none",
+        collapsed ? "w-[76px]" : "w-[260px]"
+      )}
+    >
+      {/* Top Signature Brand Header */}
+      <div
+        className={cn(
+          "flex items-center h-16 shrink-0 border-b border-white/10",
+          collapsed ? "justify-center px-2" : "justify-between px-4"
+        )}
+      >
+        <Link href="/" className="min-w-0">
+          <BrandLogo variant={collapsed ? "icon" : "compact"} inverted />
+        </Link>
+        {!collapsed && (
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            title="Collapse sidebar"
+            className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+          >
+            <PanelLeftClose className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
-      <nav className="flex flex-1 flex-col gap-2">
-        {links.map((link) => {
-          const Icon = link.icon;
-          const isActive = pathname === link.href || pathname?.startsWith(link.href + "/");
-          // Exact match for root
-          const isActuallyActive = link.href === "/" ? pathname === "/" : isActive;
-          
-          return (
-            <Link
-              key={link.name}
-              href={link.href}
-              className={cn(
-                "group flex items-center gap-3 rounded-2xl px-4 py-3 font-medium transition-all duration-300",
-                isActuallyActive
-                  ? "bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-700 dark:text-indigo-300 shadow-sm"
-                  : "text-gray-600 hover:bg-white/50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800/50 dark:hover:text-white hover:translate-x-1"
-              )}
-            >
-              <Icon 
-                className={cn(
-                  "h-5 w-5 transition-transform duration-300 group-hover:scale-110",
-                  isActuallyActive ? "text-indigo-600 dark:text-indigo-400" : ""
-                )} 
-              />
-              {link.name}
-            </Link>
-          );
-        })}
-      </nav>
-      
-      <div className="mt-auto pt-8 border-t border-gray-200/50 dark:border-gray-800/50">
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-3 px-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-400 font-bold uppercase">
-              {name ? name.charAt(0) : "U"}
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold truncate max-w-[120px]" title={name || "User"}>{name || "User"}</span>
-              <span className="text-xs text-gray-500">{role === "ADMIN" ? "System Manager" : "Student"}</span>
-            </div>
+      {/* Categorized Navigation */}
+      <nav className="flex-1 overflow-y-auto px-3 py-5 space-y-5">
+        {sections.map((section) => (
+          <div key={section.label} className="space-y-1">
+            {!collapsed && (
+              <p className="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400/75">
+                {section.label}
+              </p>
+            )}
+            {section.items.map((link) => {
+              const Icon = link.icon;
+              const isActive =
+                link.href === "/"
+                  ? pathname === "/"
+                  : pathname === link.href || pathname?.startsWith(link.href + "/");
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  title={collapsed ? link.name : undefined}
+                  className={cn(
+                    "group relative flex items-center gap-3 rounded-xl text-[13.5px] font-medium transition-all duration-150",
+                    collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5",
+                    isActive
+                      ? "bg-white/[0.12] text-white shadow-xs"
+                      : "text-slate-300/80 hover:bg-white/[0.06] hover:text-white"
+                  )}
+                >
+                  {/* Signature Emerald Left Indicator Bar */}
+                  {isActive && (
+                    <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-[#4ADE80]" />
+                  )}
+                  <Icon
+                    className={cn(
+                      "h-[18px] w-[18px] shrink-0 transition-colors",
+                      isActive
+                        ? "text-[#6EE787]"
+                        : "text-slate-400 group-hover:text-slate-200"
+                    )}
+                  />
+                  {!collapsed && <span className="truncate flex-1">{link.name}</span>}
+                </Link>
+              );
+            })}
           </div>
-          
-          <button 
-            onClick={handleLogout}
-            className="group flex items-center gap-3 rounded-2xl px-4 py-3 font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all duration-300 w-full"
+        ))}
+      </nav>
+
+      {/* Expand Toggle when Collapsed */}
+      {collapsed && (
+        <div className="px-3 pb-2 flex justify-center">
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            title="Expand sidebar"
+            className="rounded-lg p-2 text-slate-400 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
           >
-            <LogOut className="h-5 w-5 transition-transform duration-300 group-hover:-translate-x-1" />
-            Logout
+            <PanelLeftOpen className="h-4 w-4" />
           </button>
         </div>
+      )}
+
+      {/* Executive Profile & Sign Out Footer */}
+      <div className="shrink-0 border-t border-white/10 p-3 space-y-1.5 bg-black/15">
+        <Link
+          href="/settings"
+          className={cn(
+            "flex items-center gap-2.5 rounded-xl p-2 hover:bg-white/[0.07] transition-colors",
+            collapsed && "justify-center"
+          )}
+        >
+          <div className="h-9 w-9 shrink-0 rounded-full overflow-hidden bg-white/15 text-white flex items-center justify-center text-xs font-bold ring-1 ring-[#6EE787]/40">
+            {image ? (
+              <img
+                src={image}
+                alt={name || "User"}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              (name ? name.charAt(0) : "U").toUpperCase()
+            )}
+          </div>
+          {!collapsed && (
+            <div className="min-w-0 flex-1">
+              <p className="text-[13px] font-semibold text-white truncate">
+                {name || "User"}
+              </p>
+              <p className="text-[11px] text-slate-400 truncate">
+                {role === "ADMIN" ? "Administrator" : email || "Resident"}
+              </p>
+            </div>
+          )}
+        </Link>
+
+        <button
+          type="button"
+          onClick={handleLogout}
+          title={collapsed ? t("logout") : undefined}
+          className={cn(
+            "flex items-center gap-2.5 rounded-xl text-[13px] font-medium text-rose-300/90 hover:text-rose-200 hover:bg-rose-500/15 transition-colors w-full cursor-pointer",
+            collapsed ? "justify-center p-2.5" : "px-3 py-2"
+          )}
+        >
+          <LogOut className="h-4 w-4 shrink-0" />
+          {!collapsed && <span>{t("logout")}</span>}
+        </button>
       </div>
-    </div>
+    </aside>
   );
 }
