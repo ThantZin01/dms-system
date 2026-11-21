@@ -94,6 +94,14 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (display-mode: standalone) {
+  html,
+  body {
+    overscroll-behavior-y: none;
+  }
 }
 
 .tabular-nums {
@@ -112,7 +120,10 @@ body {
   box-shadow: var(--shadow-elevated);
 }
 
-/* Safe area support for mobile bottom navigation & sheets */
+/* Safe area support for mobile headers, bottom navigation & sheets */
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
 .pb-safe {
   padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
 }
@@ -148,4 +159,83 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Dormitory Login Hero Animations */
+@keyframes dorm-float-a {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-7px); }
+}
+
+@keyframes dorm-float-b {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(6px); }
+}
+
+@keyframes dorm-float-c {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes dorm-window-glow {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+@keyframes dorm-water-wave {
+  0%, 100% { transform: translateX(0px); }
+  50% { transform: translateX(-10px); }
+}
+
+@keyframes dorm-orbit-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes dorm-dash-flow {
+  to { stroke-dashoffset: -24; }
+}
+
+@keyframes dorm-bar-breathe {
+  0%, 100% { transform: scaleY(0.75); }
+  50% { transform: scaleY(1); }
+}
+
+.animate-dorm-float-a {
+  animation: dorm-float-a 5.5s ease-in-out infinite;
+}
+.animate-dorm-float-b {
+  animation: dorm-float-b 6.4s ease-in-out infinite;
+}
+.animate-dorm-float-c {
+  animation: dorm-float-c 7.2s ease-in-out infinite;
+}
+.animate-dorm-window {
+  animation: dorm-window-glow 4.2s ease-in-out infinite;
+}
+.animate-dorm-wave {
+  animation: dorm-water-wave 3.4s ease-in-out infinite;
+}
+.animate-dorm-spin {
+  animation: dorm-orbit-spin 12s linear infinite;
+}
+.animate-dorm-dash {
+  animation: dorm-dash-flow 2.4s linear infinite;
+}
+.animate-dorm-bar {
+  transform-origin: bottom;
+  animation: dorm-bar-breathe 3.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-dorm-float-a,
+  .animate-dorm-float-b,
+  .animate-dorm-float-c,
+  .animate-dorm-window,
+  .animate-dorm-wave,
+  .animate-dorm-spin,
+  .animate-dorm-dash,
+  .animate-dorm-bar {
+    animation: none;
+  }
 }

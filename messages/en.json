@@ -3,11 +3,16 @@
     "dashboard": "Dashboard",
     "people": "People",
     "garbage": "Garbage",
+    "water": "Water Bottles",
     "expenses": "Expenses",
     "fees": "Dormitory Fees",
     "accounts": "Accounts",
     "settings": "Settings",
-    "logout": "Logout"
+    "logout": "Logout",
+    "overviewSection": "Overview",
+    "residenceSection": "Residence",
+    "financeSection": "Finance",
+    "adminSection": "Administration"
   },
   "Dashboard": {
     "dashboard": "Dashboard Overview",
@@ -115,5 +120,24 @@
     "ks": "Ks",
     "loading": "Loading data...",
     "loadingDesc": "Please wait while we fetch the latest records"
+  },
+  "PWA": {
+    "installTitle": "Install Application",
+    "installDescription": "Install Dormitory MS on your phone or desktop for full-screen native access and quick shortcuts.",
+    "installButton": "Install Mobile & Desktop App",
+    "installedBadge": "App Installed",
+    "installedDescription": "You are running the installed Dormitory MS standalone app.",
+    "checkUpdates": "Check for App Updates",
+    "checkingUpdates": "Checking...",
+    "upToDate": "You are on the latest version.",
+    "updateAvailable": "A new version is ready. Refreshing...",
+    "installSuccess": "Dormitory MS installed successfully!",
+    "iosInstructionsTitle": "Install on iPhone / iPad",
+    "iosStep1": "Tap the Share button in Safari's toolbar.",
+    "iosStep2": "Scroll down and tap \"Add to Home Screen\".",
+    "iosStep3": "Tap \"Add\" in the top right corner.",
+    "browserMenuHint": "Use your browser menu (⋮ or Share) and choose \"Install App\" or \"Add to Home Screen\".",
+    "offlineBanner": "You are offline. Live updates will resume when reconnected.",
+    "backOnline": "Back online — synced with latest data."
   }
 }

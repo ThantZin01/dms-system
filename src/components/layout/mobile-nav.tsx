@@ -26,6 +26,7 @@ import {
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
 import { Modal } from "@/components/ui/modal";
+import { PWAInstallPrompt } from "@/components/ui/pwa-install-prompt";
 
 interface MobileNavProps {
   role?: string;
@@ -100,7 +101,7 @@ export function MobileNav({ role, name, email }: MobileNavProps) {
 
   const allSections = [
     { name: t("garbage"), subtitle: "Rotation queue & history", href: "/garbage", icon: Trash2 },
-    { name: "Water Bottles", subtitle: "Stock & restock splits", href: "/water", icon: Droplet },
+    { name: t("water"), subtitle: "Stock & restock splits", href: "/water", icon: Droplet },
     { name: t("fees"), subtitle: "3-month residence fees", href: "/fees", icon: Banknote },
     { name: t("expenses"), subtitle: "Shared bills & utilities", href: "/expenses", icon: Receipt },
     ...(role === "ADMIN"
@@ -274,6 +275,9 @@ export function MobileNav({ role, name, email }: MobileNavProps) {
               </div>
             </div>
           </div>
+
+          {/* Quick PWA Install CTA (hidden automatically when already installed) */}
+          <PWAInstallPrompt variant="subtle" mode="button" />
 
           {/* Account & Sign Out */}
           <div className="pt-3 border-t border-[var(--border)] flex items-center justify-between gap-3">

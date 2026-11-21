@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter, usePathname } from "@/i18n/routing";
 import { useLocale } from "next-intl";
@@ -19,6 +19,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
+import { DormitoryHeroVisual } from "@/components/brand/dormitory-hero-visual";
 import { PWAInstallPrompt } from "@/components/ui/pwa-install-prompt";
 import { Button } from "@/components/ui/button";
 
@@ -28,16 +29,16 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
   const { resolvedTheme, setTheme } = useTheme();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,7 +68,7 @@ export default function LoginPage() {
       {/* ===================================================================== */}
       {/* DESKTOP LEFT PANEL (50% Editorial Executive Brand Column)             */}
       {/* ===================================================================== */}
-      <section className="hidden lg:flex lg:col-span-6 relative flex-col justify-between bg-[#001B3A] text-white px-12 py-10 xl:px-16 xl:py-12 overflow-hidden border-r border-white/10">
+      <section className="hidden lg:flex lg:col-span-6 relative flex-col justify-between bg-[#001B3A] text-white px-10 py-8 xl:px-14 xl:py-10 overflow-hidden border-r border-white/10">
         {/* Subtle Architectural Grid & Soft Navy/Emerald Accent */}
         <div className="absolute inset-0 bg-luxury-grid opacity-55 pointer-events-none" />
         <div className="absolute top-0 right-0 h-80 w-80 rounded-full bg-[#0A4D8C]/35 blur-3xl pointer-events-none" />
@@ -82,46 +83,70 @@ export default function LoginPage() {
           </span>
         </div>
 
-        {/* Center Editorial Statement */}
-        <div className="relative z-10 max-w-lg my-auto">
-          <div className="flex items-center gap-2.5 mb-5">
-            <span className="h-[2px] w-7 bg-[#2CA548]" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#6EE787]">
-              Executive Residence Operations
-            </span>
+        {/* Center Clear Statement & Animated Dormitory Scene */}
+        <div className="relative z-10 max-w-[540px] my-auto space-y-6">
+          <div>
+            <div className="flex items-center gap-2.5 mb-3.5">
+              <span className="h-[2px] w-7 bg-[#2CA548]" />
+              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#6EE787]">
+                Dormitory Operations
+              </span>
+            </div>
+
+            <h1 className="text-3xl xl:text-[38px] font-bold tracking-tight leading-[1.15] text-white">
+              All your rooms, duties, and{" "}
+              <span className="bg-gradient-to-r from-[#6EE787] to-[#7BB8F7] bg-clip-text text-transparent">
+                shared bills
+              </span>{" "}
+              in one place
+            </h1>
+            <p className="mt-3 text-[14px] text-slate-300/90 leading-relaxed max-w-md">
+              Track active residents, fair garbage rotations, drinking water
+              stock, and 3-month dormitory fees
+            </p>
           </div>
 
-          <h1 className="text-3xl xl:text-[40px] font-bold tracking-tight leading-[1.15] text-white">
-            Quiet clarity for every room, duty, and shared ledger.
-          </h1>
-          <p className="mt-4 text-[14.5px] text-slate-300/90 leading-relaxed max-w-md">
-            Centralized resident registry, automated duty rotation, drinking water
-            inventory, and transparent 3-month fee & utility accounting.
-          </p>
+          {/* Animated Dormitory Object Visual */}
+          <DormitoryHeroVisual />
 
-          {/* Clean Architectural Ledger Specification Row (No bulky generic boxes) */}
-          <div className="mt-10 grid grid-cols-3 gap-6 border-t border-white/15 pt-6">
+          {/* Clean 3-Pillar Feature Strip (No dots or periods) */}
+          <div className="grid grid-cols-3 gap-5 border-t border-white/15 pt-5">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#6EE787]">
-                01 • Residence
-              </p>
-              <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex h-5 px-1.5 items-center justify-center rounded-md bg-[#6EE787]/15 text-[10px] font-bold text-[#6EE787]">
+                  01
+                </span>
+                <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white">
+                  Residence
+                </p>
+              </div>
+              <p className="text-xs text-slate-300/90 mt-1.5 leading-relaxed">
                 Rooms, contacts & active roster
               </p>
             </div>
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#6EE787]">
-                02 • Operations
-              </p>
-              <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                Fair garbage turns & water stock
+              <div className="flex items-center gap-2">
+                <span className="inline-flex h-5 px-1.5 items-center justify-center rounded-md bg-sky-400/15 text-[10px] font-bold text-sky-300">
+                  02
+                </span>
+                <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white">
+                  Operations
+                </p>
+              </div>
+              <p className="text-xs text-slate-300/90 mt-1.5 leading-relaxed">
+                Garbage turns & water stock
               </p>
             </div>
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#6EE787]">
-                03 • Finance
-              </p>
-              <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex h-5 px-1.5 items-center justify-center rounded-md bg-[#6EE787]/15 text-[10px] font-bold text-[#6EE787]">
+                  03
+                </span>
+                <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white">
+                  Finance
+                </p>
+              </div>
+              <p className="text-xs text-slate-300/90 mt-1.5 leading-relaxed">
                 3-month fees & per-person splits
               </p>
             </div>
@@ -129,19 +154,19 @@ export default function LoginPage() {
         </div>
 
         {/* Clean Bottom Metadata */}
-        <div className="relative z-10 flex items-center justify-between text-[11px] text-slate-400 border-t border-white/10 pt-5">
+        <div className="relative z-10 flex items-center justify-between text-[11px] text-slate-400 border-t border-white/10 pt-4">
           <span className="inline-flex items-center gap-1.5">
             <Building2 className="h-3.5 w-3.5 text-[#4ADE80]" />
             Dormitory Management System
           </span>
-          <span>Desktop & Mobile Edition</span>
+          <span>Web & Mobile App</span>
         </div>
       </section>
 
       {/* ===================================================================== */}
       {/* MOBILE TOP BRAND HEADER (< lg only — Native Hospitality App Feel)     */}
       {/* ===================================================================== */}
-      <div className="lg:hidden relative bg-[#001B3A] text-white px-5 pt-4 pb-16 overflow-hidden">
+      <div className="lg:hidden relative bg-[#001B3A] text-white px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-16 overflow-hidden">
         <div className="absolute inset-0 bg-luxury-grid opacity-45 pointer-events-none" />
         <div className="relative z-10 flex items-center justify-between">
           <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#6EE787]">
@@ -220,7 +245,7 @@ export default function LoginPage() {
                 Sign in to your account
               </h2>
               <p className="text-xs text-[var(--muted-foreground)] mt-1">
-                Enter your authorized residence credentials below.
+                Enter your authorized residence credentials below
               </p>
             </div>
 
@@ -230,7 +255,7 @@ export default function LoginPage() {
                 Welcome back
               </h2>
               <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
-                Enter your email and password to continue.
+                Enter your email and password to continue
               </p>
             </div>
 

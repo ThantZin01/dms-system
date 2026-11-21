@@ -82,15 +82,7 @@ export default async function SettingsPage() {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-[var(--border)] space-y-2.5">
-            <p className="text-xs font-semibold text-[var(--foreground)]">
-              Install Application
-            </p>
-            <p className="text-xs text-[var(--muted-foreground)]">
-              Install Dormitory MS on your phone or desktop for native full-screen access.
-            </p>
-            <PWAInstallPrompt variant="outline" />
-          </div>
+          <PWAInstallPrompt variant="outline" mode="card" />
         </section>
       </div>
     </div>

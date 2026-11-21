@@ -3,11 +3,16 @@
     "dashboard": "ဒက်ရှ်ဘုတ်",
     "people": "လူများ",
     "garbage": "အမှိုက်",
+    "water": "သောက်ရေဗူးများ",
     "expenses": "ကုန်ကျစရိတ်များ",
     "fees": "အဆောင်လခများ",
     "accounts": "အကောင့်များ",
     "settings": "ဆက်တင်များ",
-    "logout": "ထွက်ရန်"
+    "logout": "ထွက်ရန်",
+    "overviewSection": "ခြုံငုံသုံးသပ်ချက်",
+    "residenceSection": "နေထိုင်မှု",
+    "financeSection": "ငွေစာရင်း",
+    "adminSection": "စီမံခန့်ခွဲမှု"
   },
   "Dashboard": {
     "dashboard": "ဒက်ရှ်ဘုတ် ခြုံငုံသုံးသပ်ချက်",
@@ -115,5 +120,24 @@
     "ks": "ကျပ်",
     "loading": "ဒေတာများ ရယူနေသည်...",
     "loadingDesc": "မှတ်တမ်းများကို ရယူနေစဉ် ခေတ္တစောင့်ဆိုင်းပေးပါ"
+  },
+  "PWA": {
+    "installTitle": "အက်ပ်ကို ထည့်သွင်းရန်",
+    "installDescription": "ဖုန်း သို့မဟုတ် ကွန်ပျူတာတွင် မျက်နှာပြင်အပြည့် အမြန်အသုံးပြုနိုင်ရန် Dormitory MS ကို ထည့်သွင်းပါ။",
+    "installButton": "ဖုန်းနှင့် ကွန်ပျူတာ အက်ပ် ထည့်သွင်းရန်",
+    "installedBadge": "အက်ပ် ထည့်သွင်းပြီးပါပြီ",
+    "installedDescription": "Dormitory MS အက်ပ်ကို standalone စနစ်ဖြင့် အသုံးပြုနေပါသည်။",
+    "checkUpdates": "အက်ပ် အပ်ဒိတ် စစ်ဆေးရန်",
+    "checkingUpdates": "စစ်ဆေးနေသည်...",
+    "upToDate": "နောက်ဆုံးဗားရှင်းကို အသုံးပြုနေပါသည်။",
+    "updateAvailable": "ဗားရှင်းအသစ် ရရှိပါပြီ။ ပြန်လည်ဖွင့်နေသည်...",
+    "installSuccess": "Dormitory MS အက်ပ်ကို အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။",
+    "iosInstructionsTitle": "iPhone / iPad တွင် ထည့်သွင်းနည်း",
+    "iosStep1": "Safari ရှိ Share ခလုတ်ကို နှိပ်ပါ။",
+    "iosStep2": "အောက်သို့ဆွဲချပြီး \"Add to Home Screen\" ကို ရွေးပါ။",
+    "iosStep3": "ညာဘက်အပေါ်ရှိ \"Add\" ကို နှိပ်ပါ။",
+    "browserMenuHint": "Browser မီနူး (⋮ သို့မဟုတ် Share) မှတစ်ဆင့် \"Install App\" သို့မဟုတ် \"Add to Home Screen\" ကို ရွေးချယ်ပါ။",
+    "offlineBanner": "အင်တာနက် ပြတ်တောက်နေပါသည်။ ပြန်လည်ချိတ်ဆက်သည့်အခါ အလိုအလျောက် ပြန်လည်စတင်ပါမည်။",
+    "backOnline": "အင်တာနက် ပြန်လည်ချိတ်ဆက်ပြီးပါပြီ။"
   }
 }

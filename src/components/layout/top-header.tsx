@@ -26,15 +26,15 @@ interface TopHeaderProps {
   image?: string | null;
 }
 
-const routeMeta: Record<string, { title: string; section: string }> = {
-  "/": { title: "Overview", section: "Executive Dashboard" },
-  "/people": { title: "People Directory", section: "Residence" },
-  "/garbage": { title: "Garbage Duty", section: "Residence" },
-  "/water": { title: "Water Bottles", section: "Residence" },
-  "/fees": { title: "Dormitory Fees", section: "Finance" },
-  "/expenses": { title: "Shared Expenses", section: "Finance" },
-  "/accounts": { title: "System Accounts", section: "Administration" },
-  "/settings": { title: "Settings", section: "Administration" },
+const routeMetaKeys: Record<string, { titleKey: string; sectionKey: string }> = {
+  "/": { titleKey: "dashboard", sectionKey: "overviewSection" },
+  "/people": { titleKey: "people", sectionKey: "residenceSection" },
+  "/garbage": { titleKey: "garbage", sectionKey: "residenceSection" },
+  "/water": { titleKey: "water", sectionKey: "residenceSection" },
+  "/fees": { titleKey: "fees", sectionKey: "financeSection" },
+  "/expenses": { titleKey: "expenses", sectionKey: "financeSection" },
+  "/accounts": { titleKey: "accounts", sectionKey: "adminSection" },
+  "/settings": { titleKey: "settings", sectionKey: "adminSection" },
 };
 
 export function TopHeader({ role, name, email, image }: TopHeaderProps) {
@@ -50,12 +50,17 @@ export function TopHeader({ role, name, email, image }: TopHeaderProps) {
     setMounted(true);
   }, []);
 
-  const currentRoute =
-    routeMeta[pathname] ||
-    Object.entries(routeMeta).find(
+  const currentRouteKey =
+    routeMetaKeys[pathname] ||
+    Object.entries(routeMetaKeys).find(
       ([key]) => key !== "/" && pathname?.startsWith(key)
     )?.[1] ||
-    routeMeta["/"];
+    routeMetaKeys["/"];
+
+  const currentRoute = {
+    title: tSidebar(currentRouteKey.titleKey),
+    section: tSidebar(currentRouteKey.sectionKey),
+  };
 
   const cycleTheme = () => {
     if (theme === "light") setTheme("dark");
@@ -75,7 +80,8 @@ export function TopHeader({ role, name, email, image }: TopHeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 md:h-16 shrink-0 items-center justify-between gap-3 px-4 md:px-7 bg-[#001B3A] text-white border-b border-white/10 md:bg-[var(--surface)]/95 md:text-[var(--foreground)] md:border-[var(--border)] md:backdrop-blur-md">
+    <header className="sticky top-0 z-30 shrink-0 pt-safe md:pt-0 bg-[#001B3A] text-white border-b border-white/10 md:bg-[var(--surface)]/95 md:text-[var(--foreground)] md:border-[var(--border)] md:backdrop-blur-md">
+      <div className="flex h-14 md:h-16 items-center justify-between gap-3 px-4 md:px-7">
       {/* MOBILE LEFT: Signature Deep Navy App Header with Emblem + Page Title */}
       <div className="flex md:hidden items-center gap-2.5 min-w-0">
         <Link href="/" className="shrink-0">
@@ -210,6 +216,7 @@ export function TopHeader({ role, name, email, image }: TopHeaderProps) {
             </>
           )}
         </div>
+      </div>
       </div>
     </header>
   );

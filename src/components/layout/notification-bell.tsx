@@ -6,24 +6,69 @@ import { getUserNotifications, markAsRead, markAllAsRead } from "@/actions/notif
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 
+interface NotificationItem {
+  id: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: Date | string;
+}
+
+type BadgingNavigator = Navigator & {
+  setAppBadge?: (count?: number) => Promise<void>;
+  clearAppBadge?: () => Promise<void>;
+};
+
 export function NotificationBell() {
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(interval);
+    let active = true;
+
+    const loadNotifications = async () => {
+      if (typeof navigator !== "undefined" && !navigator.onLine) return;
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+      try {
+        const res = await getUserNotifications();
+        if (active && res.data) {
+          setNotifications(res.data);
+        }
+      } catch {
+        // Silently skip transient network errors while polling
+      }
+    };
+
+    void loadNotifications();
+    const interval = setInterval(() => {
+      void loadNotifications();
+    }, 30000);
+    const handleVisibilityOrOnline = () => {
+      if (document.visibilityState === "visible" && navigator.onLine) {
+        void loadNotifications();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityOrOnline);
+    window.addEventListener("online", handleVisibilityOrOnline);
+    return () => {
+      active = false;
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityOrOnline);
+      window.removeEventListener("online", handleVisibilityOrOnline);
+    };
   }, []);
 
-  const fetchNotifications = async () => {
-    const res = await getUserNotifications();
-    if (res.data) {
-      setNotifications(res.data);
-    }
-  };
-
   const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  // Sync unread count with OS PWA App Badge API when supported
+  useEffect(() => {
+    const nav = navigator as BadgingNavigator;
+    if (unreadCount > 0 && typeof nav.setAppBadge === "function") {
+      nav.setAppBadge(unreadCount).catch(() => {});
+    } else if (unreadCount === 0 && typeof nav.clearAppBadge === "function") {
+      nav.clearAppBadge().catch(() => {});
+    }
+  }, [unreadCount]);
 
   const handleMarkAsRead = async (id: string) => {
     setNotifications((prev) =>
@@ -56,7 +101,7 @@ export function NotificationBell() {
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="fixed left-3 right-3 top-16 md:absolute md:left-auto md:right-0 md:top-full md:mt-2 md:w-96 surface-elevated rounded-2xl z-50 overflow-hidden">
+          <div className="fixed left-3 right-3 top-[calc(4rem+env(safe-area-inset-top))] md:absolute md:left-auto md:right-0 md:top-full md:mt-2 md:w-96 surface-elevated rounded-2xl z-50 overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-[var(--foreground)]">Notifications</h3>

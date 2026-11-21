@@ -52,26 +52,26 @@ export function Sidebar({ role, name, email, image }: SidebarProps) {
 
   const sections = [
     {
-      label: "Overview",
+      label: t("overviewSection"),
       items: [{ name: t("dashboard"), href: "/", icon: LayoutDashboard }],
     },
     {
-      label: "Residence",
+      label: t("residenceSection"),
       items: [
         { name: t("people"), href: "/people", icon: Users },
         { name: t("garbage"), href: "/garbage", icon: Trash2 },
-        { name: "Water Bottles", href: "/water", icon: Droplet },
+        { name: t("water"), href: "/water", icon: Droplet },
       ],
     },
     {
-      label: "Finance",
+      label: t("financeSection"),
       items: [
         { name: t("fees"), href: "/fees", icon: Banknote },
         { name: t("expenses"), href: "/expenses", icon: Receipt },
       ],
     },
     {
-      label: "Administration",
+      label: t("adminSection"),
       items: [
         ...(role === "ADMIN"
           ? [{ name: t("accounts"), href: "/accounts", icon: UserCircle }]
@@ -84,7 +84,7 @@ export function Sidebar({ role, name, email, image }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "hidden md:flex flex-col shrink-0 h-screen bg-[#001B3A] dark:bg-[#050A14] text-slate-200 border-r border-white/10 transition-[width] duration-200 ease-out select-none",
+        "hidden md:flex flex-col shrink-0 h-full bg-[#001B3A] dark:bg-[#050A14] text-slate-200 border-r border-white/10 transition-[width] duration-200 ease-out select-none",
         collapsed ? "w-[76px]" : "w-[260px]"
       )}
     >
